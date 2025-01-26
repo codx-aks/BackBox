@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request, Response
 from app.controllers.cctv_controller import CCTVController
 from app.main import process_video
-
 cctv_bp = Blueprint('cctv', __name__)
 cctv_controller = CCTVController()
 
@@ -26,7 +25,6 @@ def get_cctvs_by_floor(floor):
 def get_cctv_by_watchid(watchid):
     result = cctv_controller.get_cctv_by_watchid(watchid)
     return jsonify(result)
-
 @cctv_bp.route('/process_video', methods=['POST'])
 def process_video_endpoint():
     """

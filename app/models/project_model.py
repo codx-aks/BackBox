@@ -60,3 +60,36 @@ class Project(BaseModel):
             ]
 
         return self.update_one({'_id': ObjectId(project_id)}, update_data)
+    def get_project_details(self):
+        """Get the first project's details (since we have only one project)"""
+        return self.find_one({})
+
+    def calculate_floor(self, elevation, ground_altitude, floor_height):
+        """Calculate floor number based on elevation"""
+        if elevation < ground_altitude:
+            return 0
+        relative_height = elevation - ground_altitude
+        floor = int(relative_height / floor_height) + 1
+        return str(floor)  # Convert to string to match floor numbers in hazardous_zones
+
+    def is_point_in_zone(self, lat, lng, zone):
+        """Check if a point is inside a rectangular zone"""
+        zone_min_lat = min(zone['topleft']['lat'], zone['bottomright']['lat'])
+        zone_max_lat = max(zone['topleft']['lat'], zone['bottomright']['lat'])
+        zone_min_lng = min(zone['topleft']['lng'], zone['bottomright']['lng'])
+        zone_max_lng = max(zone['topleft']['lng'], zone['bottomright']['lng'])
+        
+        return (zone_min_lat <= lat <= zone_max_lat and 
+                zone_min_lng <= lng <= zone_max_lng)
+
+    def check_hazardous_zone(self, floor, lat, lng):
+        """Check if location is in any hazardous zone on the given floor"""
+        project = self.get_project_details()
+        if not project or 'hazardous_zones' not in project:
+            return False
+        
+        floor_zones = project['hazardous_zones'].get(floor, [])
+        for zone in floor_zones:
+            if self.is_point_in_zone(lat, lng, zone):
+                return True
+        return False
