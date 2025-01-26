@@ -73,7 +73,6 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
                 "watch_id": None,
                 "lat": None,
                 "long": None,
-                "cctv": "CCTV1",
                 "alert_type": class_name
             }
             AlertController.add_alert(alert_data)
