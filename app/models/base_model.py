@@ -3,6 +3,8 @@ from bson import ObjectId
 
 class BaseModel:
     def __init__(self):
+        if db is None:
+            raise Exception("Database connection is not initialized.")
         self.collection = db[self.__class__.__name__.lower()]
     
     def test_connection(self):
