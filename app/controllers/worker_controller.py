@@ -9,13 +9,14 @@ class WorkerController:
         self.worker_model = Worker()
         self.project_model = Project()
         self.alert_model = Alert()
-        
+
         # Health monitoring thresholds
         self.HEART_RATE_MIN = 60
         self.HEART_RATE_MAX = 120
-    
+
     def create_worker(self, worker_data):
         try:
+            # Validate required fields
             required_fields = ['worker_name', 'social_security_number', 'phone_number']
             for field in required_fields:
                 if field not in worker_data:
@@ -24,9 +25,11 @@ class WorkerController:
                         "message": f"Missing required field: {field}"
                     }
             
+            # Create worker
             worker_id = self.worker_model.create_worker(worker_data)
             
             if worker_id:
+                # Get the created worker to return watch_id
                 worker = self.worker_model.find_by_id(worker_id)
                 return {
                     "status": "success",
@@ -52,7 +55,7 @@ class WorkerController:
             "title": "Red Alert" if severity == "high" else "Orange Alert",
             "body": "High heart rate detected!" if alert_type == "Abnormal Heart Rate" else "You are in a hazardous location"
         }
-        
+
         try:
             # Send notification using internal endpoint
             response = requests.post(
@@ -66,7 +69,7 @@ class WorkerController:
     def check_health_status(self, heart_rate, watch_id, lat, lng):
         """Check heart rate and create alert if necessary"""
         if heart_rate < self.HEART_RATE_MIN or heart_rate > self.HEART_RATE_MAX:
-            severity = "high" if (heart_rate < self.HEART_RATE_MIN - 10 or 
+            severity = "high" if (heart_rate < self.HEART_RATE_MIN - 10 or
                                 heart_rate > self.HEART_RATE_MAX + 10) else "medium"
             alert_data = {
                 'alert_id': str(uuid.uuid4()),
@@ -77,14 +80,14 @@ class WorkerController:
                 'alert_type': "Abnormal Heart Rate",
                 'timestamp': datetime.utcnow()
             }
-            
+
             # Create alert in database
             self.alert_model.create_alert(alert_data)
-            
+
             # Send FCM notification for high severity
             if severity == "high":
                 self.send_alert_notification("Abnormal Heart Rate", severity)
-            
+
             return alert_data
         return None
 
@@ -113,17 +116,20 @@ class WorkerController:
                 'alert_type': "Hazardous Zone Alert",
                 'timestamp': datetime.utcnow()
             }
-            
+
             # Create alert in database
             self.alert_model.create_alert(alert_data)
-            
+
             # Send FCM notification
             self.send_alert_notification("Hazardous Zone Alert", severity)
-            
+
             return alert_data
         return None
 
     def update_worker_data(self, worker_data):
+        """
+        Update worker's data including location, heart rate, and elevation
+        """
         try:
             # Validate required fields
             required_fields = ['watch_id', 'latitude', 'longitude', 'heart_rate', 'absolute_elevation']
@@ -190,7 +196,7 @@ class WorkerController:
 
             # Check conditions and generate alerts
             alerts = []
-            
+
             # Check heart rate
             health_alert = self.check_health_status(heart_rate, watch_id, lat, lng)
             if health_alert:
@@ -219,10 +225,10 @@ class WorkerController:
                         "absolute_elevation": elevation
                     }
                 }
-                
+
                 if alerts:
                     response["alerts"] = alerts
-                
+
                 return response
 
             return {

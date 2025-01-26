@@ -14,10 +14,13 @@ def create_app():
     from app.routes.worker_routes import worker_bp
     from app.routes.cctv_routes import cctv_bp
     from app.routes.fcm_routes import fcm_bp
+    from app.routes.alert_routes import alert_bp
     app.register_blueprint(test_bp)
     app.register_blueprint(project_bp)
     app.register_blueprint(manager_bp)
     app.register_blueprint(worker_bp)
     app.register_blueprint(cctv_bp)
     app.register_blueprint(fcm_bp)
+    app.register_blueprint(alert_bp)
+
     return app

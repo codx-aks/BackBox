@@ -14,6 +14,7 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
     :param video_name: Name to save the decoded video as .mp4.
     """
     video_path = f"./{video_name}"
+    print("hy1")
     with open(video_path, "wb") as video_file:
         video_file.write(base64.b64decode(base64_video))
 
@@ -21,6 +22,7 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
     model = YOLO(model_path)
 
     cap = cv2.VideoCapture(video_path)
+    print("hy2")
     if not cap.isOpened():
         raise Exception(f"Failed to open video file: {video_path}")
 
