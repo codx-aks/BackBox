@@ -72,9 +72,9 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
             alert_data = {
                 "alert_id": f"{frame_count}_{class_name}",
                 "severity": risk,
-                "watch_id": None,
-                "lat": None,
-                "long": None,
+                "watch_id": 5,
+                "lat": 5.045,
+                "long": 7.034,
                 "alert_type": class_name
             }
             AlertController.add_alert(alert_data)
