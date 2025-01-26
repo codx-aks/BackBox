@@ -2,6 +2,9 @@ from app.models.base_model import BaseModel
 from datetime import datetime
 import os
 
+# from app.routes.cctv_routes import get_all_cctvs
+
+
 class CCTV(BaseModel):
     def __init__(self):
         super().__init__()
