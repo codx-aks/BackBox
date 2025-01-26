@@ -6,12 +6,6 @@ class FCMController:
     def send_topic_notification(data):
         """
         Send notification to all devices subscribed to a topic
-        
-        Args:
-            data (dict): Contains topic, title, and body for the notification
-        
-        Returns:
-            tuple: (response_dict, status_code)
         """
         try:
             # Validate required fields
@@ -31,7 +25,10 @@ class FCMController:
                     title=title,
                     body=body
                 ),
-                topic=topic
+                topic=topic,
+                android=messaging.AndroidConfig(
+                    priority='high',
+                )
             )
 
             # Send the message
@@ -44,6 +41,7 @@ class FCMController:
             }, 200
 
         except Exception as e:
+            print(f"FCM Error: {str(e)}")  # Debug print
             return {
                 "success": False,
                 "error": str(e)
