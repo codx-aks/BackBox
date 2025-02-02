@@ -4,6 +4,11 @@ from app.models.alert_model import Alert
 from datetime import datetime
 import uuid
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+BACKEND_PORT=os.getenv("BACKEND_PORT")
 class WorkerController:
     def __init__(self):
         self.worker_model = Worker()
@@ -59,7 +64,7 @@ class WorkerController:
         try:
             # Send notification using internal endpoint
             response = requests.post(
-                'http://localhost:5000/fcm/send',
+                f'http://localhost:{BACKEND_PORT}/fcm/send',
                 json=notification_data
             )
             print(f"FCM Notification response: {response.json()}")
