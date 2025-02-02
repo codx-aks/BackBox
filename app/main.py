@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from collections import defaultdict
 from app.controllers.alert_controller import AlertController
+from app.models.alert_model import Alert
 
 def process_video(base64_video, video_name="uploaded_video.mp4"):
     """
@@ -63,6 +64,7 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
                         class_counts[class_name] += 1
 
     cap.release()
+    alert_obj = Alert()
 
     average_counts = {class_name: count / frame_count for class_name, count in class_counts.items()}
     print("\nAverage Detections per Frame (Confidence >= 0.25):")
@@ -77,7 +79,7 @@ def process_video(base64_video, video_name="uploaded_video.mp4"):
                 "long": 7.034,
                 "alert_type": class_name
             }
-            AlertController.add_alert(alert_data)
+            alert_obj.create_alert(alert_data)
             print(f"Alert sent: {alert_data}")
 
     os.remove(video_path)
